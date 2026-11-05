@@ -13,7 +13,7 @@ variable "name_prefix" {
 variable "app_image" {
   description = "Container image to run. Pin a version tag for reproducible deployments. Must be pullable without credentials (a public registry) and match the instance CPU architecture (the published image is multi-arch)."
   type        = string
-  default     = "ghcr.io/esapuolakka/coffeeshop-mvc:latest"
+  default     = "ghcr.io/esapuolakka/coffeeshop-java:latest"
 }
 
 variable "instance_type" {

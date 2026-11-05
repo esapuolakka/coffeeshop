@@ -96,7 +96,7 @@ run "defaults" {
   }
 
   assert {
-    condition     = strcontains(aws_instance.app.user_data, "docker pull \"ghcr.io/esapuolakka/coffeeshop-mvc:latest\"") && strcontains(aws_instance.app.user_data, "APP_STORAGE_TYPE=s3") && strcontains(aws_instance.app.user_data, "-p 80:8080")
+    condition     = strcontains(aws_instance.app.user_data, "docker pull \"ghcr.io/esapuolakka/coffeeshop-java:latest\"") && strcontains(aws_instance.app.user_data, "APP_STORAGE_TYPE=s3") && strcontains(aws_instance.app.user_data, "-p 80:8080")
     error_message = "user_data should start the configured image with S3 storage on port 80."
   }
 
