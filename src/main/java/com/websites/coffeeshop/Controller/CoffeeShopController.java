@@ -3,7 +3,7 @@ package com.websites.coffeeshop.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +29,7 @@ import com.websites.coffeeshop.model.ItemWithImageUrl;
 import com.websites.coffeeshop.service.CoffeeShopService;
 
 import jakarta.servlet.http.HttpSession;
+import java.time.Duration;
 
 @Controller
 public class CoffeeShopController {
@@ -135,10 +136,11 @@ public class CoffeeShopController {
   @GetMapping("/products/{category}/{id}/image")
   public ResponseEntity<byte[]> itemDetailImage(@PathVariable Long id) {
     Image image = coffeeShopService.getImageById(id);
-    final HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.parseMediaType(image.getMediaType()));
-    headers.setContentLength(image.getSize());
-    return new ResponseEntity<>(image.getContent(), headers, HttpStatus.OK);
+    // An image id is never reused (replacing an image creates a new one), so it can be cached.
+    return ResponseEntity.ok()
+        .contentType(MediaType.parseMediaType(image.getMediaType()))
+        .cacheControl(CacheControl.maxAge(Duration.ofDays(1)).cachePublic())
+        .body(coffeeShopService.getImageContent(image));
   }
 
   @GetMapping("/cart")

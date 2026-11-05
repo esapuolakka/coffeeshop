@@ -2,6 +2,9 @@ package com.websites.coffeeshop.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.io.IOException;
+import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.websites.coffeeshop.repository.CategoryRepository;
 import com.websites.coffeeshop.repository.DiscountRepository;
@@ -25,10 +32,15 @@ import com.websites.coffeeshop.model.Item;
 import com.websites.coffeeshop.model.ItemDTO;
 import com.websites.coffeeshop.model.Manufacturer;
 import com.websites.coffeeshop.model.Supplier;
+import com.websites.coffeeshop.storage.ImageStorage;
 
 @Service
 public class AdminService {
 
+  private static final Logger log = LoggerFactory.getLogger(AdminService.class);
+
+  @Autowired
+  private ImageStorage imageStorage;
   @Autowired
   private ItemRepository itemRepository;
   @Autowired
@@ -68,6 +80,10 @@ public class AdminService {
   public Image getImageById(Long id) {
     return imageRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Image not found"));
+  }
+
+  public byte[] getImageContent(Image image) {
+    return imageStorage.get(image.getStorageKey());
   }
 
   public List<Manufacturer> getAllManufacturers() {
@@ -145,9 +161,17 @@ public class AdminService {
       newItem.setImage(newImage);
     }
 
-    return itemRepository.save(newItem);
+    try {
+      return itemRepository.save(newItem);
+    } catch (RuntimeException e) {
+      if (newItem.getImage() != null) {
+        deleteStoredImageQuietly(newItem.getImage().getStorageKey());
+      }
+      throw e;
+    }
   }
 
+  @Transactional
   public Item updateItem(ItemDTO updatedItem, MultipartFile file) {
 
     Item existingItem = itemRepository.findById(updatedItem.getId())
@@ -178,13 +202,14 @@ public class AdminService {
       return existingItem;
     }
 
-    if (existingItem.getImage() != null) {
-      imageRepository.delete(existingItem.getImage());
-    }
+    Image replacedImage = isImageUpdated ? existingItem.getImage() : null;
+    String replacedKey = replacedImage != null ? replacedImage.getStorageKey() : null;
 
-    if (file != null && !file.isEmpty()) {
+    if (isImageUpdated) {
       Image newImage = createImageFromFile(file);
       existingItem.setImage(newImage);
+      // if the transaction does not commit, the freshly uploaded object is orphaned
+      deleteStoredImageAfterTransaction(newImage.getStorageKey(), false);
     }
 
     existingItem.setName(updatedItem.getName());
@@ -194,7 +219,14 @@ public class AdminService {
     existingItem.setSupplier(supplier);
     existingItem.setCategory(category);
 
-    return itemRepository.save(existingItem);
+    Item saved = itemRepository.save(existingItem);
+
+    if (replacedImage != null) {
+      imageRepository.delete(replacedImage);
+      // only once the database no longer references it
+      deleteStoredImageAfterTransaction(replacedKey, true);
+    }
+    return saved;
   }
 
   private void validateItem(ItemDTO updatedItem) {
@@ -231,15 +263,56 @@ public class AdminService {
       throw new IllegalArgumentException("Image size must be less than 1MB");
 
     try {
+      String extension = "image/png".equals(file.getContentType()) ? ".png" : ".jpg";
+      String storageKey = "images/" + UUID.randomUUID() + extension;
+      imageStorage.put(storageKey, file.getBytes(), file.getContentType());
+
       Image newImage = new Image();
       newImage.setName(file.getOriginalFilename());
       newImage.setMediaType(file.getContentType());
       newImage.setSize(file.getSize());
-      newImage.setContent(file.getBytes());
+      newImage.setStorageKey(storageKey);
       return newImage;
     } catch (IOException e) {
       throw new RuntimeException("Failed to store image", e);
     }
+  }
+
+  /** Cleanup must never hide the original problem or fail a request that already succeeded. */
+  private void deleteStoredImageQuietly(String key) {
+    if (key == null) {
+      return;
+    }
+    try {
+      imageStorage.delete(key);
+    } catch (RuntimeException e) {
+      log.warn("Could not delete stored image {}", key, e);
+    }
+  }
+
+  /**
+   * Deletes the stored object once the current transaction has completed: when it
+   * committed ({@code onCommit}) or when it did not. The key is passed as a string
+   * because a lazily loaded Image cannot be read after the session is closed.
+   */
+  private void deleteStoredImageAfterTransaction(String key, boolean onCommit) {
+    if (key == null) {
+      return;
+    }
+    if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+      if (onCommit) {
+        deleteStoredImageQuietly(key);
+      }
+      return;
+    }
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+      @Override
+      public void afterCompletion(int status) {
+        if ((status == STATUS_COMMITTED) == onCommit) {
+          deleteStoredImageQuietly(key);
+        }
+      }
+    });
   }
 
   public Manufacturer addManufacturer(Manufacturer manufacturer) {
@@ -305,12 +378,14 @@ public class AdminService {
     return supplierRepository.save(supplier);
   }
 
+  @Transactional
   public void deleteItem(Long id) {
-    if (itemRepository.existsById(id)) {
-      itemRepository.deleteById(id);
-    } else {
-      throw new RuntimeException("Item not found with id: " + id);
-    }
+    Item item = itemRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Item not found with id: " + id));
+    Image image = item.getImage();
+    String key = image != null ? image.getStorageKey() : null;
+    itemRepository.deleteById(id); // cascades to the image row
+    deleteStoredImageAfterTransaction(key, true);
   }
 
   public void deleteManufacturer(Long id) {

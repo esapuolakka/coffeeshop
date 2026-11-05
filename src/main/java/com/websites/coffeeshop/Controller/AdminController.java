@@ -1,11 +1,12 @@
 package com.websites.coffeeshop.controller;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -99,11 +100,10 @@ public class AdminController {
   @GetMapping("/products/{id}/image")
   public ResponseEntity<byte[]> viewItemImage(@PathVariable Long id) {
     Image image = adminService.getImageById(id);
-    final HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.parseMediaType(image.getMediaType()));
-    headers.setContentLength(image.getSize());
-
-    return new ResponseEntity<>(image.getContent(), headers, HttpStatus.OK);
+    return ResponseEntity.ok()
+        .contentType(MediaType.parseMediaType(image.getMediaType()))
+        .cacheControl(CacheControl.maxAge(Duration.ofDays(1)).cachePrivate())
+        .body(adminService.getImageContent(image));
   }
 
   @PostMapping("/products/{id}")

@@ -5,6 +5,7 @@ services:
       - "8080:8080"
     volumes:
       - ./logs:/app/logs
+      - uploads:/app/uploads
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/mydb
@@ -32,3 +33,4 @@ services:
 
 volumes:
   pgdata:
+  uploads:

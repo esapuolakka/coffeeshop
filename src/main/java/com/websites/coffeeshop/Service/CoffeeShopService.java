@@ -14,12 +14,16 @@ import com.websites.coffeeshop.model.Discount;
 import com.websites.coffeeshop.model.Image;
 import com.websites.coffeeshop.model.Item;
 import com.websites.coffeeshop.model.ItemWithImageUrl;
+import com.websites.coffeeshop.storage.ImageStorage;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
 @Service
 public class CoffeeShopService {
+
+  @Autowired
+  private ImageStorage imageStorage;
 
   @Autowired
   private ItemRepository itemRepository;
@@ -46,6 +50,10 @@ public class CoffeeShopService {
   public Image getImageById(Long id) {
     return imageRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Image not found"));
+  }
+
+  public byte[] getImageContent(Image image) {
+    return imageStorage.get(image.getStorageKey());
   }
 
   public Page<ItemWithImageUrl> getAllItemsWithImageUrls(Long categoryId, Pageable pageable) {

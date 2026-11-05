@@ -1,13 +1,10 @@
 package com.websites.coffeeshop.model;
 
-import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 
 @Entity
@@ -28,20 +25,19 @@ public class Image {
   @Column(name = "size")
   private Long size;
 
-  @Lob
-  @Column(name = "content")
-  @Basic(fetch = FetchType.LAZY)
-  private byte[] content;
+  /** Key of the image bytes in the ImageStorage (local directory or S3 object key). */
+  @Column(name = "storage_key")
+  private String storageKey;
 
   public Image() {
   }
 
-  public Image(Long id, String name, String mediaType, Long size, byte[] content) {
+  public Image(Long id, String name, String mediaType, Long size, String storageKey) {
     this.id = id;
     this.name = name;
     this.mediaType = mediaType;
     this.size = size;
-    this.content = content;
+    this.storageKey = storageKey;
   }
 
   public Long getId() {
@@ -76,11 +72,11 @@ public class Image {
     this.size = size;
   }
 
-  public byte[] getContent() {
-    return content;
+  public String getStorageKey() {
+    return storageKey;
   }
 
-  public void setContent(byte[] content) {
-    this.content = content;
+  public void setStorageKey(String storageKey) {
+    this.storageKey = storageKey;
   }
 }
