@@ -2,6 +2,8 @@ resource "aws_security_group" "app" {
   name        = "${local.name}-app"
   description = "Web server: HTTP in, anything out. No SSH, use SSM Session Manager."
   vpc_id      = aws_vpc.main.id
+
+  tags = { Name = "${local.name}-app" }
 }
 
 resource "aws_vpc_security_group_ingress_rule" "app_http" {
@@ -26,6 +28,8 @@ resource "aws_security_group" "db" {
   name        = "${local.name}-db"
   description = "PostgreSQL: only from the web server"
   vpc_id      = aws_vpc.main.id
+
+  tags = { Name = "${local.name}-db" }
 }
 
 resource "aws_vpc_security_group_ingress_rule" "db_from_app" {

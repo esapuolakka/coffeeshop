@@ -43,6 +43,11 @@ resource "aws_instance" "app" {
 
   depends_on = [
     aws_internet_gateway.main,
+    # The first-boot script needs outbound access (packages, SSM, registry), and
+    # Terraform removes a security group's default egress rule. Without this the
+    # instance can boot before the rules exist and its script fails for good.
+    aws_vpc_security_group_egress_rule.app_all,
+    aws_vpc_security_group_ingress_rule.app_http,
     aws_ssm_parameter.db_password,
     aws_ssm_parameter.admin_password,
     aws_ssm_parameter.remember_me_key,
@@ -56,4 +61,6 @@ resource "aws_eip" "app" {
   instance = aws_instance.app.id
 
   depends_on = [aws_internet_gateway.main]
+
+  tags = { Name = "${local.name}-app" }
 }

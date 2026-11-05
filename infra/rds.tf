@@ -1,6 +1,8 @@
 resource "aws_db_subnet_group" "main" {
   name       = local.name
   subnet_ids = aws_subnet.private[*].id
+
+  tags = { Name = local.name }
 }
 
 resource "aws_db_instance" "main" {
@@ -35,4 +37,6 @@ resource "aws_db_instance" "main" {
     # a minor version picked by AWS must not cause a diff
     ignore_changes = [engine_version]
   }
+
+  tags = { Name = local.name }
 }

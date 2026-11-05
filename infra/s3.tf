@@ -4,6 +4,8 @@
 resource "aws_s3_bucket" "images" {
   bucket        = "${local.name}-images"
   force_destroy = true # empty the bucket on destroy
+
+  tags = { Name = "${local.name}-images" }
 }
 
 resource "aws_s3_bucket_public_access_block" "images" {
