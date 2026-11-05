@@ -1,4 +1,6 @@
-FROM maven:3.9-eclipse-temurin-21 AS builder
+# The jar is platform independent, so Maven always runs natively on the build
+# machine, even when the final image is built for another architecture.
+FROM --platform=$BUILDPLATFORM maven:3.9-eclipse-temurin-21 AS builder
 WORKDIR /app
 COPY pom.xml .
 RUN mvn dependency:go-offline -B
