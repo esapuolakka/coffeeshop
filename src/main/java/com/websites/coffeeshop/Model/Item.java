@@ -9,9 +9,11 @@ import java.math.BigDecimal;
 public class Item {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "item_seq")
-  // starts above the ids that data.sql inserts explicitly
-  @SequenceGenerator(name = "item_seq", sequenceName = "item_seq", initialValue = 1000, allocationSize = 50)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_item")
+  // Starts above the ids that data.sql inserts explicitly. The name is not the old
+  // Hibernate default (<table>_seq) on purpose: databases created by an older version
+  // still have that sequence starting at 1, and reusing it produced negative ids.
+  @SequenceGenerator(name = "seq_item", sequenceName = "seq_item", initialValue = 1000, allocationSize = 50)
   @Column(name = "id")
   private Long id;
 
@@ -30,6 +32,14 @@ public class Item {
 
   @Column(name = "created_at")
   private LocalDateTime createdAt;
+
+  /** Seed data sets created_at in SQL; items created in the app get it here. */
+  @PrePersist
+  void onCreate() {
+    if (createdAt == null) {
+      createdAt = LocalDateTime.now();
+    }
+  }
 
   @ManyToOne
   @JoinColumn(name = "category_id", nullable = false)

@@ -8,9 +8,11 @@ import jakarta.persistence.*;
 public class Supplier {
   
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "supplier_seq")
-  // starts above the ids that data.sql inserts explicitly
-  @SequenceGenerator(name = "supplier_seq", sequenceName = "supplier_seq", initialValue = 1000, allocationSize = 50)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_supplier")
+  // Starts above the ids that data.sql inserts explicitly. The name is not the old
+  // Hibernate default (<table>_seq) on purpose: databases created by an older version
+  // still have that sequence starting at 1, and reusing it produced negative ids.
+  @SequenceGenerator(name = "seq_supplier", sequenceName = "seq_supplier", initialValue = 1000, allocationSize = 50)
   @Column(name="id")
   private Long id;
 

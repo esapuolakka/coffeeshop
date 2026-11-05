@@ -13,9 +13,11 @@ import jakarta.persistence.Table;
 public class Discount {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "discount_seq")
-  // starts above the ids that data.sql inserts explicitly
-  @SequenceGenerator(name = "discount_seq", sequenceName = "discount_seq", initialValue = 1000, allocationSize = 50)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_discount")
+  // Starts above the ids that data.sql inserts explicitly. The name is not the old
+  // Hibernate default (<table>_seq) on purpose: databases created by an older version
+  // still have that sequence starting at 1, and reusing it produced negative ids.
+  @SequenceGenerator(name = "seq_discount", sequenceName = "seq_discount", initialValue = 1000, allocationSize = 50)
   @Column(name = "id")
   private Long id;
 
