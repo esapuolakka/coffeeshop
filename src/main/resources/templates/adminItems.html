@@ -237,7 +237,10 @@
                 modal.hide();
                 window.location.reload();
               } else {
-                alert("Adding failed.");
+                // the server explains what is wrong (wrong image type, image too large, ...)
+                response.text().then((message) => {
+                  alert("Adding failed" + (message && message.length < 200 ? ": " + message : "."));
+                });
               }
             })
             .catch((error) => {

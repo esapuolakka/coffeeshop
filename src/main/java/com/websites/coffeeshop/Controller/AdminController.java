@@ -3,6 +3,7 @@ package com.websites.coffeeshop.controller;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -70,10 +72,18 @@ public class AdminController {
   }
 
   @PostMapping("/products")
-  public ResponseEntity<Item> addNewItem(@ModelAttribute ItemDTO itemDTO,
+  public ResponseEntity<Map<String, Long>> addNewItem(@ModelAttribute ItemDTO itemDTO,
       @RequestParam(value = "image", required = false) MultipartFile file) {
     Item newItem = adminService.addNewItem(itemDTO, file);
-    return new ResponseEntity<>(newItem, HttpStatus.CREATED);
+    // Only the id: the entity itself cannot be serialized (lazy proxies, circular references)
+    // and the page only needs to know that it worked.
+    return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", newItem.getId()));
+  }
+
+  /** Validation problems (wrong image type, image too large, ...) are the client's mistake: tell them. */
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<String> handleInvalidInput(IllegalArgumentException e) {
+    return ResponseEntity.badRequest().contentType(MediaType.TEXT_PLAIN).body(e.getMessage());
   }
 
   @GetMapping("/products/{id}")
