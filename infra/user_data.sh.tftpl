@@ -1,0 +1,49 @@
+#!/bin/bash
+# Runs once at first boot as root. Output: /var/log/cloud-init-output.log
+set -euo pipefail
+
+dnf install -y docker
+systemctl enable --now docker
+
+# A freshly created instance role can take a few seconds to become effective.
+get_secret() {
+  for attempt in $(seq 1 10); do
+    if aws ssm get-parameter --region "${region}" --with-decryption \
+      --name "${secret_path}/$1" --query Parameter.Value --output text 2>/dev/null; then
+      return 0
+    fi
+    sleep 6
+  done
+  echo "could not read secret $1" >&2
+  return 1
+}
+
+# Settings for the container. The secrets are fetched with the instance role,
+# they are not part of this script.
+umask 077
+cat > /etc/coffeeshop.env <<ENV
+SPRING_PROFILES_ACTIVE=prod
+SPRING_DATASOURCE_URL=${db_url}
+SPRING_DATASOURCE_USERNAME=${db_username}
+SPRING_DATASOURCE_PASSWORD=$(get_secret db_password)
+APP_ADMIN_USERNAME=${admin_user}
+APP_ADMIN_PASSWORD=$(get_secret admin_password)
+APP_REMEMBER_ME_KEY=$(get_secret remember_me_key)
+APP_STORAGE_TYPE=s3
+APP_STORAGE_S3_BUCKET=${bucket}
+APP_STORAGE_S3_REGION=${region}
+ENV
+
+# the registry can be unreachable for a moment right after boot
+for attempt in $(seq 1 10); do
+  docker pull "${app_image}" && break
+  echo "docker pull failed (attempt $attempt), retrying"
+  sleep 10
+done
+
+docker run -d --name coffeeshop \
+  --restart unless-stopped \
+  --env-file /etc/coffeeshop.env \
+  --log-opt max-size=10m --log-opt max-file=3 \
+  -p 80:8080 \
+  "${app_image}"

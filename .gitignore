@@ -36,3 +36,14 @@ build/
 
 # local overrides for docker compose (secrets)
 .env
+
+### Terraform ###
+infra/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+crash.log
+crash.*.log
+*.tfvars
+!*.tfvars.example
