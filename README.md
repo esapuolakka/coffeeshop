@@ -373,6 +373,7 @@ Environment variables read by the application (Spring maps them to properties):
 | `APP_STORAGE_LOCAL_DIR` | `local` | Image directory. Default `uploads`. |
 | `APP_STORAGE_S3_BUCKET` | `s3` (required) | Bucket for product images. |
 | `APP_STORAGE_S3_REGION` | `s3` | Bucket region. Defaults to `AWS_REGION` or the instance's region. |
+| `APP_SEED_IMAGES_ENABLED` | | `true` (default) copies the product pictures in `src/main/resources/seed-images` to the image storage at startup. |
 
 AWS credentials for S3 come from the standard AWS provider chain. On EC2 that is the
 instance role, so no keys are configured.
