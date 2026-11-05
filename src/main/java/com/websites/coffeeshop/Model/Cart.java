@@ -1,11 +1,14 @@
 package com.websites.coffeeshop.model;
 
+import java.io.Serializable;
 import java.math.RoundingMode;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Cart {
+public class Cart implements Serializable {
+  private static final long serialVersionUID = 1L;
+
   private List<CartItem> items = new ArrayList<>();
 
   public void addItem(Long productId, String productName, BigDecimal price, double discountedPrice, int quantity) {

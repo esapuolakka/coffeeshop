@@ -73,7 +73,8 @@ class AdminSuppliersSecurityTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void adminCanAccessSupplierDetails() throws Exception {
-        mockMvc.perform(get("/admin/suppliers/" + supplierIdForTest))
+        // csrf(): the page renders forms; create the token before the response is committed
+        mockMvc.perform(get("/admin/suppliers/" + supplierIdForTest).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("adminSupplierDetails"));
     }

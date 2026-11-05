@@ -72,7 +72,7 @@ class AdminManufacturersSecurityTest {
 
   @Test
   void adminUserCanAccessManufacturerDetailsPage() throws Exception {
-    mockMvc.perform(get("/admin/manufacturers/{id}", manufacturerId).with(user("admin").roles("ADMIN")))
+    mockMvc.perform(get("/admin/manufacturers/{id}", manufacturerId).with(csrf()).with(user("admin").roles("ADMIN")))
         .andExpect(status().isOk())
         .andExpect(view().name("adminManufacturerDetails"))
         .andExpect(model().attributeExists("manufacturer"))

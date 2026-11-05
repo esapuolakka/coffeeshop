@@ -1,8 +1,11 @@
 package com.websites.coffeeshop.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class CartItem {
+public class CartItem implements Serializable {
+  private static final long serialVersionUID = 1L;
+
   private Long productId;
   private String name;
   private BigDecimal price;
