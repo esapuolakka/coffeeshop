@@ -8,7 +8,9 @@ import jakarta.persistence.*;
 public class Supplier {
   
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "supplier_seq")
+  // starts above the ids that data.sql inserts explicitly
+  @SequenceGenerator(name = "supplier_seq", sequenceName = "supplier_seq", initialValue = 1000, allocationSize = 50)
   @Column(name="id")
   private Long id;
 

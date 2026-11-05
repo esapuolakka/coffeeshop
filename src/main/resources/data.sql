@@ -1,15 +1,15 @@
 -- Test data
 
 
-INSERT INTO category (id, name, parent_category_id) VALUES (1, 'coffee-machines', 0) ON CONFLICT (id) DO NOTHING;
-INSERT INTO category (id, name, parent_category_id) VALUES (2, 'coffee-products', 0) ON CONFLICT (id) DO NOTHING;
-INSERT INTO category (id, name, parent_category_id) VALUES (3, 'espresso-machines', 1) ON CONFLICT (id) DO NOTHING;
-INSERT INTO category (id, name, parent_category_id) VALUES (4, 'filter-coffee', 1) ON CONFLICT (id) DO NOTHING;
-INSERT INTO category (id, name, parent_category_id) VALUES (5, 'coffee-grinders', 1) ON CONFLICT (id) DO NOTHING;
-INSERT INTO category (id, name, parent_category_id) VALUES (6, 'filters', 2) ON CONFLICT (id) DO NOTHING;
-INSERT INTO category (id, name, parent_category_id) VALUES (7, 'coffee', 2) ON CONFLICT (id) DO NOTHING;
-INSERT INTO category (id, name, parent_category_id) VALUES (8, 'espressos', 7) ON CONFLICT (id) DO NOTHING;
-INSERT INTO category (id, name, parent_category_id) VALUES (9, 'filter-coffees', 7) ON CONFLICT (id) DO NOTHING;
+INSERT INTO category (id, name, parent_category_id) VALUES (1, 'coffee-machines', 0) ON CONFLICT DO NOTHING;
+INSERT INTO category (id, name, parent_category_id) VALUES (2, 'coffee-products', 0) ON CONFLICT DO NOTHING;
+INSERT INTO category (id, name, parent_category_id) VALUES (3, 'espresso-machines', 1) ON CONFLICT DO NOTHING;
+INSERT INTO category (id, name, parent_category_id) VALUES (4, 'filter-coffee', 1) ON CONFLICT DO NOTHING;
+INSERT INTO category (id, name, parent_category_id) VALUES (5, 'coffee-grinders', 1) ON CONFLICT DO NOTHING;
+INSERT INTO category (id, name, parent_category_id) VALUES (6, 'filters', 2) ON CONFLICT DO NOTHING;
+INSERT INTO category (id, name, parent_category_id) VALUES (7, 'coffee', 2) ON CONFLICT DO NOTHING;
+INSERT INTO category (id, name, parent_category_id) VALUES (8, 'espressos', 7) ON CONFLICT DO NOTHING;
+INSERT INTO category (id, name, parent_category_id) VALUES (9, 'filter-coffees', 7) ON CONFLICT DO NOTHING;
 
 
 
@@ -33,7 +33,7 @@ INSERT INTO manufacturer (id, name, url) VALUES
 (17, 'Blue Bottle Coffee', 'https://www.bluebottlecoffee.com'),
 (18, 'Peugeot', 'https://www.peugeot.com'),
 (19, 'Café Puro', 'https://www.cafepuro.com')
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT DO NOTHING;
 
 
 
@@ -48,7 +48,7 @@ INSERT INTO supplier (id, name, contact_person, contact_person_email) VALUES
 (8, 'Cafe & Pastries', 'Lisa Baker', 'lisa.baker@cafe-pastries.fi'),
 (9, 'Coffee Wholesale', 'Jack Miller', 'jack.miller@coffeewholesale.fi'),
 (10, 'Coffee Supplies', 'Sally Harper', 'sally.harper@coffeesupplies.fi')
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT DO NOTHING;
 
 
 
@@ -93,7 +93,7 @@ INSERT INTO item (id, name, description, price, image_id, category_id, supplier_
 (38, 'Fellow Ode Brew Grinder', 'Premium coffee grinder designed for filter brewing methods.', 299, NULL, 1, 3, 1, NOW()),
 (39, 'Breville BES990BSS Oracle Touch', 'Top-tier automatic coffee machine with advanced brewing control.', 2999, NULL, 1, 4, 3, NOW()),
 (40, 'Melitta Caffeo CI', 'Automatic coffee machine with personalized drink profiles.', 1199, NULL, 1, 5, 4, NOW())
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT DO NOTHING;
 
 INSERT INTO item (id, name, description, price, image_id, category_id, supplier_id, manufacturer_id, created_at) VALUES 
 (41, 'Lavazza Qualità Rossa', 'Balanced and full-bodied filter coffee for everyday enjoyment.', 12.99, NULL, 2, 1, 1, NOW()),
@@ -136,14 +136,14 @@ INSERT INTO item (id, name, description, price, image_id, category_id, supplier_
 (78, 'Tuscany Blend Coffee', 'Italian-style coffee blend full of flavor.', 15.99, NULL, 2, 3, 1, NOW()),
 (79, 'Vanilla Flavored Coffee', 'Flavored coffee with sweet vanilla notes.', 12.99, NULL, 2, 4, 3, NOW()),
 (80, 'Hazelnut Coffee', 'Flavored coffee with delicious nutty aroma.', 13.99, NULL, 2, 5, 4, NOW())
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT DO NOTHING;
 
 
-INSERT INTO role (id, name) VALUES (1, 'ROLE_ADMIN') ON CONFLICT (id) DO NOTHING;
-INSERT INTO role (id, name) VALUES (2, 'ROLE_USER') ON CONFLICT (id) DO NOTHING;
-INSERT INTO role (id, name) VALUES (3, 'ROLE_VIP') ON CONFLICT (id) DO NOTHING;
+INSERT INTO role (id, name) VALUES (1, 'ROLE_ADMIN') ON CONFLICT DO NOTHING;
+INSERT INTO role (id, name) VALUES (2, 'ROLE_USER') ON CONFLICT DO NOTHING;
+INSERT INTO role (id, name) VALUES (3, 'ROLE_VIP') ON CONFLICT DO NOTHING;
 
-INSERT INTO discount (id, discount_percentage) VALUES (1, 10.0) ON CONFLICT (id) DO NOTHING;
+INSERT INTO discount (id, discount_percentage) VALUES (1, 10.0) ON CONFLICT DO NOTHING;
 
 
 

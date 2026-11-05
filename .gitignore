@@ -33,3 +33,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# local overrides for docker compose (secrets)
+.env

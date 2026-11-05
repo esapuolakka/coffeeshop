@@ -11,11 +11,9 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/mydb
       - SPRING_DATASOURCE_USERNAME=user
       - SPRING_DATASOURCE_PASSWORD=pass
-      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
-      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - SPRING_SQL_INIT_MODE=always
-      - SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION=true
+      # local demo values only; override them in a .env file (not committed)
+      - APP_ADMIN_PASSWORD=${APP_ADMIN_PASSWORD:-admin123}
+      - APP_REMEMBER_ME_KEY=${APP_REMEMBER_ME_KEY:-local-demo-remember-me-key}
     depends_on:
       - db
     restart: on-failure

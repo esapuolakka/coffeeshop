@@ -9,7 +9,9 @@ import java.math.BigDecimal;
 public class Item {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "item_seq")
+  // starts above the ids that data.sql inserts explicitly
+  @SequenceGenerator(name = "item_seq", sequenceName = "item_seq", initialValue = 1000, allocationSize = 50)
   @Column(name = "id")
   private Long id;
 

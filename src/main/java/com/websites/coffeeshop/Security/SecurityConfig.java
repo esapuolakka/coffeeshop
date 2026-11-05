@@ -1,5 +1,6 @@
 package com.websites.coffeeshop.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,6 +14,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+  /** Signs remember-me cookies. The default is for local development only; the prod profile requires a real key. */
+  @Value("${app.security.remember-me-key:dev-only-remember-me-key}")
+  private String rememberMeKey;
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -36,6 +41,7 @@ public class SecurityConfig {
                 .requestMatchers("/user").hasAnyRole("USER", "ADMIN", "VIP")
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/error").permitAll()
+                .requestMatchers("/actuator/health/**").permitAll()
                 .requestMatchers("/login/**").permitAll()
                 .requestMatchers("/register/**").permitAll()
                 .requestMatchers("/home").permitAll()
@@ -46,7 +52,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated())
             .rememberMe(rememberMe -> rememberMe
                 .tokenValiditySeconds(86400)  // 1 Day
-                .key("mySecretKey"))
+                .key(rememberMeKey))
             .formLogin(form -> form
                 .loginPage("/login")
                 .defaultSuccessUrl("/user", true)

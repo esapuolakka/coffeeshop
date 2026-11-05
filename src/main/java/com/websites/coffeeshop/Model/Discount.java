@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -12,7 +13,9 @@ import jakarta.persistence.Table;
 public class Discount {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "discount_seq")
+  // starts above the ids that data.sql inserts explicitly
+  @SequenceGenerator(name = "discount_seq", sequenceName = "discount_seq", initialValue = 1000, allocationSize = 50)
   @Column(name = "id")
   private Long id;
 
