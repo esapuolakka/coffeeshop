@@ -113,8 +113,8 @@ Do not use the root account for this. Create a dedicated IAM user:
 ### Deploy
 
 ```bash
-git clone https://github.com/esapuolakka/coffeeshop-java.git
-cd coffeeshop-java/infra
+git clone https://github.com/esapuolakka/coffeeshop.git
+cd coffeeshop/infra
 
 export AWS_PROFILE=coffeeshop   # the profile from the previous step
 
@@ -190,7 +190,7 @@ Every variable is optional. Set them in a `terraform.tfvars` file (start from
 | `region` | `eu-north-1` | AWS region. The availability zone is chosen automatically to match the instance type. |
 | `restrict_to_my_ip` | `false` | `true` allows only your current public IP to reach the app (detected when Terraform runs). |
 | `allowed_cidrs` | `["0.0.0.0/0"]` | Networks allowed to reach port 80. Ignored when `restrict_to_my_ip` is true. |
-| `app_image` | latest published image | Container image to run. Pin a version for reproducible demos, for example `ghcr.io/esapuolakka/coffeeshop-java:sha-<commit>`. |
+| `app_image` | latest published image | Container image to run. Pin a version for reproducible demos, for example `ghcr.io/esapuolakka/coffeeshop:sha-<commit>`. |
 | `instance_type` | `t3.small` | EC2 size. Graviton types such as `t4g.small` work too. |
 | `db_instance_class` | `db.t4g.micro` | RDS size. |
 | `db_allocated_storage` | `20` | RDS storage in GiB. |

@@ -3,7 +3,7 @@
 # region = "eu-north-1"
 
 # Pin a released image version instead of "latest" for reproducible demos.
-# app_image = "ghcr.io/esapuolakka/coffeeshop-java:1.0.0"
+# app_image = "ghcr.io/esapuolakka/coffeeshop:1.0.0"
 
 # Only allow your own current IP to reach the app:
 # restrict_to_my_ip = true
