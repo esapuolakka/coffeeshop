@@ -1,4 +1,4 @@
-# Coffee Shop App
+# Coffee Shop Webshop App
 
 A coffee shop web application (Spring Boot, Thymeleaf, PostgreSQL) with a complete,
 reproducible deployment to AWS using Terraform.
