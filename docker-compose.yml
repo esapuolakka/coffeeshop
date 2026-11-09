@@ -11,7 +11,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/mydb
       - SPRING_DATASOURCE_USERNAME=user
       - SPRING_DATASOURCE_PASSWORD=pass
-      # local demo values only; override them in a .env file (not committed)
+      # local demo values only; override them in a .env file
       - APP_ADMIN_PASSWORD=${APP_ADMIN_PASSWORD:-admin123}
       - APP_REMEMBER_ME_KEY=${APP_REMEMBER_ME_KEY:-local-demo-remember-me-key}
     depends_on:
